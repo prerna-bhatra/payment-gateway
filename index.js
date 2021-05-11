@@ -26,7 +26,7 @@ app.use(cors())
 //routes midlleware
 app.use('/api',userRoutes);
 // app.use('/api',userRoutes1);
-// app.use('/api',productRoutes);
+app.use('/api',productRoutes);
 // app.use('/api',slotRoutes);
 
 const port=process.env.PORT || 8000

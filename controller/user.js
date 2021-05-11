@@ -41,7 +41,7 @@ exports.signup=async(req,res)=>
 
 exports.signin=async(req,res)=>
 {
-	console.log("SIGNIN")
+	// console.log("SIGNIN")
 	try {
 		//find the user on email
 	const {email,password}=req.body;
@@ -80,14 +80,51 @@ exports.signin=async(req,res)=>
 
 exports.isAuth=(req,res,next)=>
 {
-	let user=req.profile && req.auth && req.profile._id==req.auth._id
-	if(!user)
+	// let user=req.profile && req.auth && req.profile._id==req.auth._id
+	let token=req.headers.token;
+	const decoded= jwt.verify(token,process.env.JWT_SECRET);
+    // const verifiedUser=verifyAdmin(decoded);
+	console.log("USER",decoded);
+    // if(verifiedAdmin)
+    // {
+	// 	next();
+    // }
+    // else
+    // {
+	// 	return res.status(403).json({
+	// 		error:"Access Denied"
+	// 	})
+    // }
+
+}
+
+exports.isAdmin=async(req,res,next)=>
+{
+	let token=req.headers.token;
+	const decoded= jwt.verify(token,process.env.JWT_SECRET);
+    // const verifiedUser=verifyAdmin(decoded);
+	console.log("USER",decoded);
+	const adminFound=await User.findOne({email:decoded.payLoad.email},{role:1});
+
+	console.log("ADMINFOUND",adminFound);
+	if(adminFound)
 	{
-		return res.status(403).json({
-			error:"Access Denied"
+		if(adminFound.role===1)
+		{
+			next();
+		}
+		else{
+			res.json({
+				err:"PAERMISSION DENIED"
+			})
+		}
+	}
+	else{
+		res.json({
+			err:"ADMIN NOT FOUND"
 		})
 	}
-	next()
+
 }
 
 
